@@ -1,50 +1,58 @@
+import express, { Express, Request, Response, NextFunction } from "express";
+import cors from "cors";
 import Render from "./Render";
 import {
   createCanvas,
   registerFont
 } from "canvas";
 import { Option } from "./@types";
-import fs from "fs";
+import Config from "./config";
 
-const top = "ああああああ";
-const bottom = "いいいいい";
+const app: Express = express();
 
-const option: Option = {
-  hoshii: false,
-  noalpha: true,
-  rainbow: false,
-  imgtype: "png",
-  single: false,
-  debug: false
-}
+registerFont("./src/font/notobk-subset.otf",{ family: "notobk" });
+registerFont("./src/font/notoserifbk-subset.otf",{ family: "notoserifbk" });
 
-registerFont("./src/font/notobk-subset.otf",{family: "notobk"});
-registerFont("./src/font/notoserifbk-subset.otf",{family: "notoserifbk"});
+app.listen(Config.port,()=>{
+  console.log(`${Config.port}番ポートで起動しました`);
+});
 
-const render = new Render(createCanvas(3840,1080),option);
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
+app.use(cors());
 
-if(!option.single){
-  render.drawTop(top,option.rainbow);
+app.use((req: Request,res: Response,next: NextFunction)=>{
+  console.log(`${req.ip} - [${req.method}] ${req.originalUrl}`);
 
-  if(!option.hoshii){
-    render.drawBottom(bottom,null,option.rainbow);
+  next();
+});
+
+app.get("/",(req: Request,res: Response)=>{
+  res.status(200).send("5000兆円欲しい!API\nhttps://github.com/Taka005/5000Choyen");
+});
+
+app.post("/generate",(req: Request,res: Response)=>{
+  const { top, bottom } = req.params;
+  const option: Option = req.body;
+
+  const render: Render = new Render(createCanvas(3840,1080),option);
+
+  if(!option.single){
+    render.drawTop(top,Boolean(option.rainbow));
+
+    if(!option.hoshii){
+      render.drawBottom(bottom,null,Boolean(option.rainbow));
+    }else{
+      render.drawImage();
+    }
   }else{
-    render.drawImage();
+    if(top){
+      render.drawTop(top,Boolean(option.rainbow));
+    }else{
+      render.drawBottom(bottom,null,Boolean(option.rainbow));
+    }
   }
-}else{
-  if(top){
-    render.drawTop(top,option.rainbow);
-  }else{
-    render.drawBottom(bottom,null,option.rainbow);
-  }
-}
 
-const data = render.createBuffer(option.imgtype,100);
-
-fs.writeFile(`output.${option.imgtype}`,data,(err: Error | null)=>{
-  if(err){
-    console.error("画像保存中にエラーが発生しました:",err);
-  }else{
-    console.log("画像が正常に保存されました");
-  }
+  res.set("Content-Type",`image/${option.imgtype}`);
+  res.status(200).send(render.createBuffer(option.imgtype,100));
 });
