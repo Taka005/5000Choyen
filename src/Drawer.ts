@@ -290,7 +290,7 @@ class Drawer{
     this.ctx.lineWidth = 7;
     this.ctx.strokeText(text,posX,posY);
   
-    const silver2 = this.ctx.createLinearGradient(0, posY-80, 0, posY);
+    const silver2 = this.ctx.createLinearGradient(0,posY-80,0,posY);
     silver2.addColorStop(0,"rgb(245,246,248)");
     silver2.addColorStop(0.15,"rgb(255,255,255)");
     silver2.addColorStop(0.35,"rgb(195,213,220)");
@@ -299,7 +299,7 @@ class Drawer{
     silver2.addColorStop(0.52,"rgb(196,215,222)");
     silver2.addColorStop(1.0,"rgb(255,255,255)");
     this.ctx.fillStyle = silver2;
-    this.ctx.fillText(text, posX, posY - 3);
+    this.ctx.fillText(text,posX,posY - 3);
 
     const textWH = this.ctx.measureText(text);
     this.actualWidth.bottom = textWH.width + posX;

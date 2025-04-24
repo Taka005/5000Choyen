@@ -55,7 +55,7 @@ class Render{
     if(this.hoshii){
       this.drawImage();
     }else{
-      this.drawBottom(text,null,isRainbow);
+      this.drawBottom(text,null,isRainbow); //fix commendouted
     }
   }
   
@@ -66,6 +66,7 @@ class Render{
     let order = this.noalpha ? "white" : "transparent";
 
     if(this.debug) order = "debug";
+
     if(this.single){
       posX = this.fixedX;
       posY = 100;
