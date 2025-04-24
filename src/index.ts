@@ -6,7 +6,7 @@ import {
   registerFont
 } from "canvas";
 import { Option } from "./@types";
-import Config from "./config";
+import Config from "./Config";
 
 const app: Express = express();
 
